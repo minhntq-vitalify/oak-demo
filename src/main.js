@@ -21,6 +21,7 @@ const scene = new THREE.Scene();
 // Create a camera
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = 5;
+camera.position.y = 2;
 
 // Add a light source
 const light = new THREE.DirectionalLight(0xffffff, 1);
@@ -32,27 +33,6 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true; // Enable damping (inertia)
 controls.dampingFactor = 0.25; // Damping factor
 controls.screenSpacePanning = false; // Disable panning
-
-// Key controls for camera movement
-const moveSpeed = 0.1;
-function handleKeyDown(event) {
-  switch (event.key) {
-    case 'ArrowUp':
-      camera.position.y += moveSpeed;
-      break;
-    case 'ArrowDown':
-      camera.position.y -= moveSpeed;
-      break;
-    case 'ArrowLeft':
-      camera.position.x -= moveSpeed;
-      break;
-    case 'ArrowRight':
-      camera.position.x += moveSpeed;
-      break;
-  }
-}
-
-window.addEventListener('keydown', handleKeyDown);
 
 async function fetchModelList(folder) {
   const response = await fetch(`${folder}/models.json`);
