@@ -3,7 +3,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const loader = new GLTFLoader();
-const buildingsFolder = '/public/buildings';
+const basePath = `${window.location.origin}${window.location.pathname}`;
+const buildingsFolder = `${basePath}public/buildings`;
 
 // Create a new WebGLRenderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
