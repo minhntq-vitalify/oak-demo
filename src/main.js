@@ -1,10 +1,15 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import Stats from 'stats'
+
+// Initialize Stats object
+const stats = new Stats();
+stats.showPanel(0);
+document.body.appendChild(stats.dom);
 
 const loader = new GLTFLoader();
 const basePath = `${window.location.origin}${window.location.pathname}`;
-const buildingsFolder = `${basePath}public/buildings`;
 
 // Create a new WebGLRenderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -19,14 +24,29 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 
 // Create a camera
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 300);
 camera.position.z = 5;
 camera.position.y = 2;
 
 // Add a light source
-const light = new THREE.DirectionalLight(0xffffff, 1);
+const light = new THREE.DirectionalLight(new THREE.Color(1,1,1), 4);
 light.position.set(0, 1, 1).normalize();
+light.castShadow = false;
 scene.add(light);
+const ambientLight = new THREE.AmbientLight(0xf0f6f7, 0.5);
+scene.add(ambientLight);
+
+
+// Set a solid color background for the scene
+scene.background = new THREE.Color(0xd0d0d0);
+
+// // Add a plane for the ground
+// const groundGeometry = new THREE.PlaneGeometry(130, 200);
+// const groundMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.8, metalness: 0.1 });
+// const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+// ground.rotation.x = -Math.PI / 2; // Rotate the plane to be horizontal
+// ground.position.y = 0; // Position the plane at y = 0
+// scene.add(ground);
 
 // Add OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -42,21 +62,56 @@ async function fetchModelList(folder) {
   return response.json();
 }
 
-function loadModel(path, onLoad) {
+// Material for buildings
+const buildingsMaterial = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  metalness: 0.1,
+  roughness: 0.8,
+});
+
+// Material for lands
+const landsMaterial = new THREE.MeshStandardMaterial({
+  color: 0xfefefe,
+  metalness: 0.1,
+  roughness: 0.8,
+});
+
+function loadModelBuldings(path, onLoad) {
   loader.load(path, (gltf) => {
     const model = gltf.scene;
+    model.traverse((child) => {
+      if (child.isMesh) {
+        child.material = buildingsMaterial;
+      }
+    });
+
     onLoad(model);
   }, undefined, (error) => {
     console.error(`Error loading model at ${path}:`, error);
   });
 }
 
-async function loadAllModels(folder) {
+function loadModelLands(path, onLoad) {
+  loader.load(path, (gltf) => {
+    const model = gltf.scene;
+    model.traverse((child) => {
+      if (child.isMesh) {
+        // child.material = landsMaterial;
+      }
+    });
+
+    onLoad(model);
+  }, undefined, (error) => {
+    console.error(`Error loading model at ${path}:`, error);
+  });
+}
+
+async function loadBuildings(folder) {
   try {
     const files = await fetchModelList(folder);
     files.forEach(file => {
       const filePath = `${folder}/${file}`;
-      loadModel(filePath, (model) => {
+      loadModelBuldings(filePath, (model) => {
         scene.add(model);
       });
     });
@@ -65,14 +120,31 @@ async function loadAllModels(folder) {
   }
 }
 
-// Call the function to load all models
-loadAllModels(buildingsFolder);
+async function loadLands(folder) {
+  try {
+    const files = await fetchModelList(folder);
+    files.forEach(file => {
+      const filePath = `${folder}/${file}`;
+      loadModelLands(filePath, (model) => {
+        scene.add(model);
+      });
+    });
+  } catch (error) {
+    console.error('Error loading models:', error);
+  }
+}
+
+loadBuildings(`${basePath}public/buildings`);
+// loadLands(`${basePath}public/lands`);
+
 
 // Animation loop
 function animate() {
+  stats.begin(); // Start measuring
   requestAnimationFrame(animate);
   controls.update(); // Update controls
   renderer.render(scene, camera);
+  stats.end(); // End measuring
 }
 
 // Handle window resize
