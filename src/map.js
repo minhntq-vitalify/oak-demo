@@ -9,8 +9,10 @@ stats.showPanel(-1);
 document.body.appendChild(stats.dom);
 
 const loader = new GLTFLoader();
-// const basePath = `${window.location.origin}${window.location.pathname}`;
-const basePath = `${window.location.origin}`;
+// Get the base path
+const origin = window.location.origin;
+const pathname = window.location.pathname;
+const basePath = `${origin}${pathname.substring(0, pathname.lastIndexOf('/'))}/`;
 
 // Create a new WebGLRenderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
