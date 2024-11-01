@@ -5,11 +5,12 @@ import Stats from 'stats'
 
 // Initialize Stats object
 const stats = new Stats();
-stats.showPanel(0);
+stats.showPanel(-1);
 document.body.appendChild(stats.dom);
 
 const loader = new GLTFLoader();
-const basePath = `${window.location.origin}${window.location.pathname}`;
+// const basePath = `${window.location.origin}${window.location.pathname}`;
+const basePath = `${window.location.origin}`;
 
 // Create a new WebGLRenderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -29,7 +30,7 @@ camera.position.z = 5;
 camera.position.y = 2;
 
 // Add a light source
-const light = new THREE.DirectionalLight(new THREE.Color(1,1,1), 4);
+const light = new THREE.DirectionalLight(0xffffff, 4);
 light.position.set(0, 1, 1).normalize();
 light.castShadow = false;
 scene.add(light);
@@ -50,9 +51,18 @@ scene.background = new THREE.Color(0xd0d0d0);
 
 // Add OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; // Enable damping (inertia)
+controls.enableDamping = true; // Enable damping (inertia)  
 controls.dampingFactor = 0.25; // Damping factor
 controls.screenSpacePanning = false; // Disable panning
+
+
+// Add a box in the center of the scene
+// const boxGeometry = new THREE.BoxGeometry();
+// const boxMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+// const box = new THREE.Mesh(boxGeometry, boxMaterial);
+// scene.add(box);
+
+//
 
 async function fetchModelList(folder) {
   const response = await fetch(`${folder}/models.json`);
@@ -62,26 +72,17 @@ async function fetchModelList(folder) {
   return response.json();
 }
 
-// Material for buildings
-const buildingsMaterial = new THREE.MeshStandardMaterial({
-  color: 0xffffff,
-  metalness: 0.1,
-  roughness: 0.8,
-});
-
-// Material for lands
-const landsMaterial = new THREE.MeshStandardMaterial({
-  color: 0xfefefe,
-  metalness: 0.1,
-  roughness: 0.8,
-});
-
 function loadModelBuldings(path, onLoad) {
   loader.load(path, (gltf) => {
     const model = gltf.scene;
     model.traverse((child) => {
       if (child.isMesh) {
-        child.material = buildingsMaterial;
+        if (child.material)
+        {
+          child.material.color = new THREE.Color(0xffffff);
+          child.material.metalness = 0.1;
+          child.material.roughness = 0.8;
+        }
       }
     });
 
@@ -96,7 +97,12 @@ function loadModelLands(path, onLoad) {
     const model = gltf.scene;
     model.traverse((child) => {
       if (child.isMesh) {
-        // child.material = landsMaterial;
+        if (child.material)
+          {
+            child.material.color = new THREE.Color(0xffffff);
+            child.material.metalness = 0.1;
+            child.material.roughness = 0.8;
+          }
       }
     });
 
@@ -134,7 +140,7 @@ async function loadLands(folder) {
   }
 }
 
-loadBuildings(`${basePath}public/buildings`);
+loadBuildings(`${basePath}/models/buildings`);
 // loadLands(`${basePath}public/lands`);
 
 

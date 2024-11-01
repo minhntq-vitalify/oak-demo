@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OAK Demo</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="styles/main.css" />
+    <script src=""></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "stats": "https://cdnjs.cloudflare.com/ajax/libs/stats.js/r17/Stats.min.js",
+            "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <!-- <div id="instructions">Use the mouse to rotate the camera: drag to rotate, scroll to zoom</div> -->
+    <script type="module" src="src/map.js"></script>
+</body>
+
+</html>
