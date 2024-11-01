@@ -62,7 +62,7 @@ controls.screenSpacePanning = false; // Disable panning
 // const box = new THREE.Mesh(boxGeometry, boxMaterial);
 // scene.add(box);
 
-//
+// hello
 
 async function fetchModelList(folder) {
   const response = await fetch(`${folder}/models.json`);
